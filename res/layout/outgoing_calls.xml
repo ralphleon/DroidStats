@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingLeft="20px"
+    android:paddingTop="10px"
+    android:paddingBottom="10px"
+    >
+    
+    <TextView
+    	android:id="@+id/headerText"
+    	android:text="Outgoing Calls"
+    	android:gravity="center_vertical"
+    	android:textSize="25px"
+    	android:drawablePadding="5px"
+    	android:layout_height="wrap_content"
+    	android:layout_width="fill_parent"
+    	android:paddingBottom="10px"
+    />
+    
+	<com.solidsushi.droidstats.BarGraphView
+		android:id="@+id/barGraph"
+		android:layout_height="fill_parent"
+		android:layout_width="fill_parent"
+	/>
+	
+</LinearLayout>

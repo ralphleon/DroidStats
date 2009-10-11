@@ -1,23 +1,22 @@
 package com.solidsushi.droidstats;
 
-import java.util.HashMap;
-import java.util.Iterator;
-
 import android.app.Activity;
-import android.database.Cursor;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
-import android.provider.CallLog;
-import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
 
-public class StatsActivity extends Activity 
-{
-    private Cursor mCursor = null;
-    HashMap<String,Integer> mCountData = null;
-
+public class StatsActivity extends Activity implements OnItemClickListener
+{   
+	public final static int INCOMING_TYPE = 0;
+	public final static int OUTGOING_TYPE = 1;
+	public final static int MISSED_TYPE = 2;	
+	
     private final static String TAG = StatsActivity.class.getSimpleName(); 
     
-
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) 
@@ -25,65 +24,37 @@ public class StatsActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
   	
-	    // Get the base URI for the People table in the Contacts content provider.
-	    Uri contacts =  CallLog.Calls.CONTENT_URI;
-	
-	    // Make the query. 
-	    mCursor = managedQuery(	  contacts,
-	                              null, // Which columns to return 
-	                              null,       // Which rows to return (all rows)
-	                              null,       // Selection arguments (none)
-	                              null);
-	    
-	    constructCountData(mCursor);
-	    
-	    BarGraphView barView = (BarGraphView)findViewById(R.id.barGraph);
-	    barView.setData(mCountData);
-	    
-    }
-    
-    private void constructCountData(Cursor cur)
-    { 
-    	mCountData = new HashMap<String,Integer>(); 
-    	
-        if (cur.moveToFirst()) {
+        // Create the list
+        String[] mStrings = new String[]{"Incoming Calls", "Outgoing Calls","Missed Calls"}; 
 
-        	String name; 
-            String phoneNumber;
-            int nameColumn = cur.getColumnIndex(CallLog.Calls.CACHED_NAME); 
-            int phoneColumn = cur.getColumnIndex(CallLog.Calls.NUMBER);
-            
-            do {
-                // Get the field values
-                name = cur.getString(nameColumn);
-                phoneNumber = cur.getString(phoneColumn);
-               
-                if(name == null) name = "Unknown";
-                
-                if(!mCountData.containsKey(name)){
-                	Log.v(TAG,"Found a new dude = " + name);
-                	mCountData.put(name,1);
-                }
-                else{
-                	int count = mCountData.get(name);
-                	mCountData.put(name, ++count);
-                }
-                
-                Log.v("x","name: " +name + "#: " + phoneNumber);
-                
-            } while (cur.moveToNext());
-
-        }
+        ListView listView = (ListView)findViewById(R.id.menuList);
         
-        // Print the hashmap
-        Iterator<String> iter = mCountData.keySet().iterator();
-        while(iter.hasNext()) 
-        {
-        	String name = (String)iter.next();
-        	int count = mCountData.get(name);
-        	
-        	Log.v(TAG,"Name: " + name + " count " + count);
-        }
-     
+        // Create an ArrayAdapter, that will actually make the Strings above appear in the ListView 
+        listView.setAdapter(new ArrayAdapter<String>(this, 
+                         android.R.layout.simple_list_item_1, mStrings));
+        
+        listView.setOnItemClickListener(this);
     }
+
+	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) 
+	{
+		Intent i = null;
+		
+		switch(arg2)
+		{
+			case OUTGOING_TYPE:
+			case MISSED_TYPE:
+			case INCOMING_TYPE:
+				
+				i = new Intent(this,CallsActivity.class);
+				i.putExtra("Type",arg2);
+				
+				break;
+		}
+		
+		startActivity(i);
+		
+	}
+    
+   
 }

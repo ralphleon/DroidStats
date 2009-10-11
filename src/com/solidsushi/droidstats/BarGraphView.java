@@ -37,7 +37,8 @@ class BarGraphView extends View
 		mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
 		mTextPaint.setColor(Color.WHITE);
 		mTextPaint.setTextAlign(Paint.Align.RIGHT);
-	
+		mTextPaint.setTextSize(12);
+		
 		mBarTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
 		mBarTextPaint.setColor(Color.WHITE);
 		
@@ -76,7 +77,7 @@ class BarGraphView extends View
         	if(i == MAX_BARS) break;
         	i++;
         }
-        
+	
         constructBars();
 		invalidate();
 	}
@@ -123,7 +124,7 @@ class BarGraphView extends View
 				canvas.drawRect(r,mBarPaint);
 			
 				x = TEXT_AREA_PADDING-10;
-				y = r.bottom + BAR_PADDING -(r.bottom-r.top)/2-mTextHeight/2; 
+				y = r.bottom -(r.bottom-r.top)/2-mTextHeight/2; 
 				
 				// Draw the Label
 				canvas.drawText(mTitles[i],x, y,mTextPaint);
