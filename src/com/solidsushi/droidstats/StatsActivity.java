@@ -13,7 +13,7 @@ public class StatsActivity extends Activity implements OnItemClickListener
 {   
 	public final static int INCOMING_TYPE = 0;
 	public final static int OUTGOING_TYPE = 1;
-	public final static int MISSED_TYPE = 2;	
+	public final static int MISSED_TYPE = 2, DURATION = 3;
 	
     private final static String TAG = StatsActivity.class.getSimpleName(); 
     
@@ -25,7 +25,7 @@ public class StatsActivity extends Activity implements OnItemClickListener
         setContentView(R.layout.main);
   	
         // Create the list
-        String[] mStrings = new String[]{"Incoming Calls", "Outgoing Calls","Missed Calls"}; 
+        String[] mStrings = new String[]{"Incoming Calls", "Outgoing Calls","Missed Calls","Call Duration"}; 
 
         ListView listView = (ListView)findViewById(R.id.menuList);
         
@@ -45,16 +45,16 @@ public class StatsActivity extends Activity implements OnItemClickListener
 			case OUTGOING_TYPE:
 			case MISSED_TYPE:
 			case INCOMING_TYPE:
-				
 				i = new Intent(this,CallsActivity.class);
-				i.putExtra("Type",arg2);
+				i.putExtra("Type",arg2);			
+				break;
 				
+			case DURATION:
+				i = new Intent(this,MinutesActivity.class);
 				break;
 		}
 		
 		startActivity(i);
 		
 	}
-    
-   
 }

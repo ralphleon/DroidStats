@@ -11,10 +11,10 @@ import android.provider.CallLog;
 import android.util.Log;
 import android.widget.TextView;
 
-public class CallsActivity extends Activity
+public class MinutesActivity extends Activity
 {
 	private Cursor mCursor = null;
-    HashMap<String,Integer> mCountData = null;
+    HashMap<String,Integer> mMinData = null;
 
     private final static String TAG = StatsActivity.class.getSimpleName(); 
 	    
@@ -34,37 +34,11 @@ public class CallsActivity extends Activity
 	    TextView label = (TextView)findViewById(R.id.headerText);
 	    
 	    String filter;
-	    int color = 0;
-	    
-	    switch(getIntent().getIntExtra("Type",-1))
-	    {
-	    	case StatsActivity.INCOMING_TYPE:
-	    		 filter = CallLog.Calls.TYPE + " = " + CallLog.Calls.INCOMING_TYPE;
-	    		 label.setText("Incoming Calls");
-	    		 label.setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.sym_call_incoming, 0, 0, 0);
-	    		 color = Color.BLUE;
-	    		 break;
-	    	
-	    	case StatsActivity.OUTGOING_TYPE:
-	    		 filter = CallLog.Calls.TYPE + " = " + CallLog.Calls.OUTGOING_TYPE;
-	    		 label.setText("Outgoing Calls");
-	    		 label.setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.sym_call_outgoing, 0, 0, 0);
-	    		 color = Color.GREEN;
-	    		 break;
-	    
-	    	case StatsActivity.MISSED_TYPE:
-	    		 filter = CallLog.Calls.TYPE + " = " + CallLog.Calls.MISSED_TYPE;
-	    		 label.setText("Missed Calls");
-	    		 label.setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.sym_call_missed, 0, 0, 0);
-	    		 color = Color.RED;
-	    		 break;
-	    		 
-	    	default:
-	    		filter = null;
-	    		label.setText("Error");
-	    			 
-	    }
-	    
+	   
+		filter = CallLog.Calls.TYPE + " = " + CallLog.Calls.INCOMING_TYPE;
+		label.setText("Duration");
+		label.setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.sym_call_incoming, 0, 0, 0);
+	
 	    // Make the query. 
 	    mCursor = managedQuery(	  CallLog.Calls.CONTENT_URI,
 	                              null, // Which columns to return 
@@ -75,13 +49,13 @@ public class CallsActivity extends Activity
 	    constructCountData(mCursor);
 	    
 	    BarGraphView barView = (BarGraphView)findViewById(R.id.barGraph);
-	    barView.setColor(color);
-	    barView.setData(mCountData);
+	    barView.setColor(Color.BLUE);
+	    barView.setData(mMinData);
     }
     
 	private void constructCountData(Cursor cur)
     { 
-    	mCountData = new HashMap<String,Integer>(); 
+    	mMinData = new HashMap<String,Integer>(); 
     	
         if (cur.moveToFirst()) {
 
@@ -90,34 +64,30 @@ public class CallsActivity extends Activity
             int nameColumn = cur.getColumnIndex(CallLog.Calls.CACHED_NAME); 
             int phoneColumn = cur.getColumnIndex(CallLog.Calls.NUMBER);
             int cachedNumberColumn = cur.getColumnIndex(CallLog.Calls.CACHED_NUMBER_LABEL);
+            int durationColumn = cur.getColumnIndex(CallLog.Calls.DURATION);
             
             do {
                 // Get the field values
                 name = cur.getString(nameColumn);
                 phoneNumber = cur.getString(phoneColumn);
                 cachedNumber = cur.getString(cachedNumberColumn);
-                
+                int duration = cur.getInt(durationColumn);
+                	
                 // Hacky code Ralph
                 if(name == null) name = "Unknown";
                 
-                if(!mCountData.containsKey(name)){
-                	mCountData.put(name,1);
+                if(!mMinData.containsKey(name)){
+                	mMinData.put(name,duration);
                 }
                 else{
-                	int count = mCountData.get(name);
-                	mCountData.put(name, ++count);
+                	int data = mMinData.get(name) + duration;
+                	Log.v(TAG,"Data: " + data);
+                	mMinData.put(name, data);
                 }
                 
             } while (cur.moveToNext());
-
         }
         
-        // Print the hashmap
-        Iterator<String> iter = mCountData.keySet().iterator();
-        while(iter.hasNext()) 
-        {
-        	String name = (String)iter.next();
-        	int count = mCountData.get(name);
-        }
+        Log.v(TAG, "MAP " + mMinData);
     }
  }
